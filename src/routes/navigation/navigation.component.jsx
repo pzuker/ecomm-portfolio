@@ -1,9 +1,9 @@
-import { Fragment } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Fragment } from "react";
+import { Outlet, Link } from "react-router-dom";
 
-import { ReactComponent as Logo } from '../../assets/crown.svg';
+import { ReactComponent as Logo } from "../../assets/crown.svg";
 
-import './navigation.styles.scss';
+import "./navigation.styles.scss";
 
 const Navigation = () => (
   <Fragment>
@@ -15,7 +15,7 @@ const Navigation = () => (
         <Link className="nav-link" to="/shop">
           Shop
         </Link>
-        <Link className="nav-link" to="/signin">
+        <Link className="nav-link" to="/auth">
           Sign In
         </Link>
       </div>
