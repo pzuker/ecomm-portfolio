@@ -1,62 +1,112 @@
-import { useState } from 'react';
+import { useState } from "react";
+
+import FormInput from "../form-input/form-input.component";
+import Button from "../button/button.component";
+
+import {
+  createAuthUserWithEmailAndPassword,
+  createUserDocFromAuth,
+} from "../../utils/firebase/firebase.utils";
+
+import "./signup-form.styles.scss";
 
 const defaultFormFields = {
-  displayName: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
+  displayName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
 };
 
-const SignupForm = () => {
+const SignUpForm = () => {
   const [formFiels, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFiels;
 
-  const onChangeField = (e) => {
-    const { name } = e;
-    return;
+  const onChangeFieldHandler = (event) => {
+    const { name, value } = event.target;
+
+    setFormFields({ ...formFiels, [name]: value });
+  };
+
+  const submitHandler = async (event) => {
+    event.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const { user } = await createAuthUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      await createUserDocFromAuth(user, { displayName });
+
+      setFormFields(defaultFormFields);
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        alert("User already exists!");
+      } else {
+        console.log(error);
+      }
+    }
   };
 
   return (
-    <div>
-      <h1>Sign Up with your email and password</h1>
-      <form onSubmit={() => {}}>
-        <label>Display Name</label>
-        <input
-          type="text"
-          onChange={onChangeField}
-          name="displayName"
-          value={displayName}
-          required
-        ></input>
-        <label>Email</label>
-        <input
-          type="email"
-          onChange={onChangeField}
-          name="email"
-          value={email}
-          required
-        ></input>
-        <label>Password</label>
-        <input
-          type="password"
-          onChange={onChangeField}
-          name="password"
-          value={password}
-          required
-        ></input>
-        <label for="confirmPassword">Confirm Password</label>
-        <input
-          type="password"
-          onChange={onChangeField}
-          id="confirmPassword"
-          name="confirmPassword"
-          value={confirmPassword}
-          required
-        ></input>
-        <button type="submit">Sign Up</button>
+    <div className="signup-container">
+      <h2>Don't have an account?</h2>
+      <span>Sign Up with your email and password</span>
+      <form onSubmit={submitHandler}>
+        <FormInput
+          label="Display Name"
+          inputOptions={{
+            type: "text",
+            onChange: onChangeFieldHandler,
+            name: "displayName",
+            value: displayName,
+            required: true,
+          }}
+        />
+
+        <FormInput
+          label="Email"
+          inputOptions={{
+            type: "email",
+            onChange: onChangeFieldHandler,
+            name: "email",
+            value: email,
+            required: true,
+          }}
+        />
+
+        <FormInput
+          label="Password"
+          inputOptions={{
+            type: "password",
+            onChange: onChangeFieldHandler,
+            name: "password",
+            value: password,
+            required: true,
+          }}
+        />
+
+        <FormInput
+          label="Confirm Password"
+          inputOptions={{
+            type: "password",
+            onChange: onChangeFieldHandler,
+            id: "confirmPassword",
+            name: "confirmPassword",
+            value: confirmPassword,
+            required: true,
+          }}
+        />
+
+        <Button type="submit">Sign Up </Button>
       </form>
     </div>
   );
 };
 
-export default SignupForm;
+export default SignUpForm;
